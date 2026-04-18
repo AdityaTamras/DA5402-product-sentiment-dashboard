@@ -15,6 +15,7 @@ airflow/logs/
 
 # Actual data files
 data/raw/*.gz
+data/raw/*.zip
 data/raw/*.csv
 data/raw/*.json
 data/processed/*.csv
