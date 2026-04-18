@@ -1,0 +1,17 @@
+venv/
+__pycache__/
+*.pyc
+.env
+mlflow_artifacts/
+data/raw/
+airflow/logs/
+/dvc-store/
+data/raw/
+data/processed/
+data/baseline/
+models/
+*.pkl
+*.bin
+*.pt
+*.gz
+*.h5
