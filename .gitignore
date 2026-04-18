@@ -1,24 +1,29 @@
+# Python
 venv/
 __pycache__/
 *.pyc
 .env
+
+# MLflow
 mlflow_artifacts/
-data/raw/
+
+# Airflow
 airflow/logs/
+
+# DVC remote store
 /dvc-store/
+
+# Actual data files
 data/raw/*.gz
 data/raw/*.csv
 data/raw/*.json
 data/processed/*.csv
 data/processed/*.json
 data/baseline/*.json
+
+# Model files
 models/*.pkl
 models/*.pt
 models/*.bin
 models/*.h5
 models/distilbert_finetuned/
-*.pkl
-*.bin
-*.pt
-*.gz
-*.h5
