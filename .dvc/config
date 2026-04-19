@@ -1,4 +1,4 @@
 [core]
     remote = localremote
 ['remote "localremote"']
-    url = ../dvc-store
+    url = D:\sentiment-dashboard\dvc-store
