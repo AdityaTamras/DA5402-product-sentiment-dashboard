@@ -1,18 +1,11 @@
-from airflow import DAG
-from airflow.operators.python import PythonOperator
+from __future__ import annotations
 from datetime import datetime
-import numpy as np
-import pandas as pd
-import json
-import gzip
-import os
-import logging
+from airflow.sdk import DAG
+from airflow.providers.standard.operators.python import PythonOperator
 
-logger=logging.getLogger(__name__)
-
-RAW_PATH='data/raw/Electronics_5.json.gz'
-OUT_PATH='data/processed/reviews_clean.csv'
-STAT_PATH='data/baseline/baseline_stats.json'
+RAW_PATH='/opt/airflow/data/raw/Electronics_5.json.zip'
+OUT_PATH='/opt/airflow/data/processed/reviews_clean.csv'
+STAT_PATH='/opt/airflow/data/baseline/baseline_stats.json'
 
 ASPECT_KEYWORDS={
     'price': ['price', 'cost', 'expensive', 'cheap', 'affordable', 'worth', 'value'],
@@ -37,12 +30,16 @@ def assign_sentiment(rating):
         return 'negative'
     
 def ingest_and_clean():
+    import pandas as pd, json, zipfile, os, logging
+    logger=logging.getLogger(__name__)
     logger.info('Loading raw reviews.....')
     records=[]
-    with gzip.open(RAW_PATH, 'rt', encoding='utf-8') as f:
-        for line in f:
-            try: records.append(json.loads(line.strip()))
-            except json.JSONDecodeError: continue
+    with zipfile.ZipFile(RAW_PATH, 'r') as z:
+        for name in z.namelist():
+            with z.open(name) as f:
+                for line in f:
+                    try: records.append(json.loads(line.strip()))
+                    except json.JSONDecodeError: continue
     df=pd.DataFrame(records)
     df=df[['reviewText', 'overall', 'summary']]
     df=df.dropna(subset=['reviewText', 'overall'])
@@ -53,11 +50,13 @@ def ingest_and_clean():
     df['aspect']=df['reviewText'].apply(assign_aspect)
     df['text']=df['reviewText'].str.strip()
     final_df=df.drop(columns=['reviewText', 'summary']).reset_index(drop=True)
-    os.makedirs('data/processed', exist_ok=True)
+    os.makedirs('opt/airflow/data/processed', exist_ok=True)
     final_df.to_csv(OUT_PATH, index=False)
     logger.info(f"Saved {len(final_df)} reviews to {OUT_PATH}")
 
 def compute_baseline():
+    import pandas as pd, numpy as np, json, os, logging
+    logger=logging.getLogger(__name__)
     df=pd.read_csv(OUT_PATH)
     lengths=df['text'].str.len()
     stats={
@@ -68,7 +67,7 @@ def compute_baseline():
         'aspect_dist': df['aspect'].value_counts(normalize=True).to_dict(),
         'n_samples': len(df)
     }
-    os.makedirs('data/baseline', exist_ok=True)
+    os.makedirs('opt/airflow/data/baseline', exist_ok=True)
     with open(STAT_PATH, 'w') as f:
         json.dump(stats, f, indent=2)
     logger.info(f"Baseline stats saved to {STAT_PATH}")
@@ -76,7 +75,7 @@ def compute_baseline():
 with DAG(
     'ingest_reviews',
     start_date=datetime(2024, 1, 1),
-    schedule_interval=None,
+    schedule=None,
     catchup=False
 ) as dag:
     
