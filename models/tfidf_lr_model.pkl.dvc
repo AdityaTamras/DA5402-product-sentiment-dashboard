@@ -1,0 +1,5 @@
+outs:
+- md5: 3a6b3a5fc53574ca9fb620302f375ba2
+  size: 3160976
+  hash: md5
+  path: tfidf_lr_model.pkl
