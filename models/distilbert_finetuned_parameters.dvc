@@ -1,0 +1,6 @@
+outs:
+- md5: 7d296175c5ee43b1a3270d4799b53b98.dir
+  size: 268548438
+  nfiles: 4
+  hash: md5
+  path: distilbert_finetuned_parameters
