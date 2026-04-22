@@ -1,0 +1,38 @@
+stages:
+  ingest:
+    cmd: python src/data/ingest.py
+    deps:
+      - src/data/ingest.py
+      - data/raw/Electronics_5.json.zip
+    outs:
+      - data/processed/reviews_clean.csv
+      - data/baseline/baseline_stats.json
+  
+  featurise:
+    cmd: python src/features/build_features.py
+    deps:
+      - src/features/build_features.py
+      - data/processed/reviews_clean.csv
+    outs:
+      - data/processed/train.csv
+      - data/processed/test.csv
+  
+  train_baseline:
+    cmd: python src/models/train_baseline.py
+    deps:
+      - src/models/train_baseline.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+    outs:
+      - models/tfidf_lr_model.pkl
+      - models/label_encoder.pkl
+  
+  train_distilbert:
+    cmd: echo "Model training done and model configuration saved to models/distilbert_finetuned_parameters/"
+    deps: 
+      - src/models/train_distilbert.py
+      - data/processed/train.csv
+      - data/processed/test.csv
+    outs:
+      - models/distilbert_finetuned_parameters/
+    

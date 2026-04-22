@@ -1,0 +1,66 @@
+schema: '2.0'
+stages:
+  ingest:
+    cmd: python src/data/ingest.py
+    deps:
+    - path: data/raw/Electronics_5.json.zip
+      hash: md5
+      md5: 35b64b1edb7aa383c139e876ede2bcc4
+      size: 506763411
+    - path: src/data/ingest.py
+      hash: md5
+      md5: 960da29d55d6e9b6dbef2bd273552d15
+      size: 3486
+    outs:
+    - path: data/baseline/baseline_stats.json
+      hash: md5
+      md5: f08a192bd4c7efe5232fc2140d887542
+      size: 490
+    - path: data/processed/reviews_clean.csv
+      hash: md5
+      md5: 0b30a26893361dbf723c26f48173b5b9
+      size: 1108544066
+  featurise:
+    cmd: python src/features/build_features.py
+    deps:
+    - path: data/processed/reviews_clean.csv
+      hash: md5
+      md5: 0b30a26893361dbf723c26f48173b5b9
+      size: 1108544066
+    - path: src/features/build_features.py
+      hash: md5
+      md5: d495f61df0a985402a8115956202da86
+      size: 1125
+    outs:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: e743a594b8a8279d88f3ff081d79d0ff
+      size: 6707424
+    - path: data/processed/train.csv
+      hash: md5
+      md5: d009b19b459f86b6bc8fa6718d44c438
+      size: 26093884
+  train_baseline:
+    cmd: python src/models/train_baseline.py
+    deps:
+    - path: data/processed/test.csv
+      hash: md5
+      md5: e743a594b8a8279d88f3ff081d79d0ff
+      size: 6707424
+    - path: data/processed/train.csv
+      hash: md5
+      md5: d009b19b459f86b6bc8fa6718d44c438
+      size: 26093884
+    - path: src/models/train_baseline.py
+      hash: md5
+      md5: edd81af537a376d5128e5dc141586bf2
+      size: 3006
+    outs:
+    - path: models/label_encoder.pkl
+      hash: md5
+      md5: 5eaf5a47054be2f60fce42269231d518
+      size: 275
+    - path: models/tfidf_lr_model.pkl
+      hash: md5
+      md5: ad84a5b783ae9106bb03db88f4f1f3e5
+      size: 3160976
