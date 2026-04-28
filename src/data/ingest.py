@@ -41,11 +41,14 @@ def assign_sentiment(rating):
 def ingest_and_clean():
     logger.info('Step 1/2 - Loading raw reviews.....')
     records=[]
+    append_record=records.append
+    json_loads=json.loads
     with zipfile.ZipFile(RAW_PATH, 'r') as z:
+        file_names=[name for name in z.namelist() if not name.endswith("/")]
         for name in z.namelist():
             with z.open(name) as f:
                 for line in f:
-                    try: records.append(json.loads(line.strip()))
+                    try: append_record(json_loads(line))
                     except json.JSONDecodeError: continue
     logger.info(f'Loaded {len(records)} raw records')
     df=pd.DataFrame(records)

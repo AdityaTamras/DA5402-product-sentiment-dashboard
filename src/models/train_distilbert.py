@@ -114,7 +114,7 @@ def train():
         preds_out=trainer.predict(test_ds)
         y_pred=np.argmax(preds_out.predictions, axis=1)
         clf_report=classification_report(y_test_encoded, y_pred, target_names=le.classes_, output_dict=True)
-        macro_f1_score=clf_report['macro avg']['f1']
+        macro_f1_score=clf_report['macro avg']['f1-score']
         mlflow.log_metric('test_macro_f1', macro_f1_score)
         for cls in le.classes_:
             mlflow.log_metric(f'test_f1_{cls}', clf_report[cls]['f1-score'])

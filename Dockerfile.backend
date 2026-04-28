@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+RUN mkdir -p /tmp && chmod 1777 /tmp
+ENV TMPDIR=/tmp
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir --timeout=300 torch==2.11.0+cpu --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY src/ ./src/
+COPY models/ ./models/
+COPY data/baseline/ ./data/baseline/
+
+EXPOSE 8000
+
+CMD ["uvicorn", "src.api.main:app", "--host", "0.0.0.0", "--port", "8000"]
